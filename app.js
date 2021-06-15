@@ -2,14 +2,18 @@ const express = require("express");
 const router = express.Router();
 let products = require("./data");
 const app = express();
+const slugify = require("slugify");
 
 app.use(express.json());
 
 app.post("/products", (req, res) => {
-  req.body.id = products[products.length - 1].id + 1;
-  products.push(req.body);
+  const id = products[products.length - 1].id + 1;
+  const slug = slugify(req.body.name, { lower: true });
+  const newProduct = { id: id, slug: slug, ...req.body };
 
-  res.status(201).json(req.body);
+  products.push(newProduct);
+
+  res.status(201).json(newProduct);
 });
 
 app.delete("/products/:productId", (req, res) => {
